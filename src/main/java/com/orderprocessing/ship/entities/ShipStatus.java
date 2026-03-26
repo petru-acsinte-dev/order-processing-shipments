@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.PositiveOrZero;
 
 @Entity
 @Table(name = "status", schema = "ship")
@@ -14,6 +15,13 @@ public class ShipStatus {
 
 	@NotEmpty
 	private String status;
+
+	protected ShipStatus() {} // JPA
+
+	public ShipStatus(@PositiveOrZero Short id, @NotEmpty String status) {
+		this.id = id;
+		this.status = status;
+	}
 
 	public Short getId() {
 		return id;

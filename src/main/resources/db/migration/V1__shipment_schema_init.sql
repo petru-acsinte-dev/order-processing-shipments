@@ -13,8 +13,8 @@ INSERT INTO ship.status (id, status) VALUES
 	(1, 'CANCELLED'),
 	(2, 'SHIPPED');
 
--- FulfillmentOrder table
-CREATE TABLE ship.fulfillment_order (
+-- Fulfillments table
+CREATE TABLE ship.fulfillments (
     id BIGSERIAL PRIMARY KEY,
     external_id UUID NOT NULL UNIQUE,
     order_external_id UUID NOT NULL,
@@ -23,23 +23,23 @@ CREATE TABLE ship.fulfillment_order (
 );
 
 -- Indexes
-DROP INDEX IF EXISTS idx_fulfillment_order_external_id;
-CREATE INDEX idx_fulfillment_order_external_id ON ship.fulfillment_order(order_external_id);
+DROP INDEX IF EXISTS idx_fulfillments_external_id;
+CREATE INDEX idx_fulfillments_external_id ON ship.fulfillments(order_external_id);
 
 DROP INDEX IF EXISTS idx_fulfillment_external_id;
-CREATE INDEX idx_fulfillment_external_id ON ship.fulfillment_order(external_id);
+CREATE INDEX idx_fulfillment_external_id ON ship.fulfillments(external_id);
 
-COMMENT ON COLUMN ship.fulfillment_order.external_id
+COMMENT ON COLUMN ship.fulfillments.external_id
 	IS 'External unique fulfillment order identifier';
 
-COMMENT ON COLUMN ship.fulfillment_order.order_external_id
+COMMENT ON COLUMN ship.fulfillments.order_external_id
 	IS 'External unique order identifier';
 
-COMMENT ON COLUMN ship.fulfillment_order.created
+COMMENT ON COLUMN ship.fulfillments.created
 	IS 'Time when the fulfillment order was submitted';
 
--- Shipment table
-CREATE TABLE ship.shipment (
+-- Shipments table
+CREATE TABLE ship.shipments (
     id BIGSERIAL PRIMARY KEY,
     external_id UUID NOT NULL UNIQUE,
     order_external_id UUID NOT NULL,
@@ -47,17 +47,17 @@ CREATE TABLE ship.shipment (
     shipped TIMESTAMPTZ
 );
 
-DROP INDEX IF EXISTS idx_shipment_order_external_id;
-CREATE INDEX idx_shipment_order_external_id ON ship.shipment(order_external_id);
+DROP INDEX IF EXISTS idx_shipments_order_external_id;
+CREATE INDEX idx_shipments_order_external_id ON ship.shipments(order_external_id);
 
 -- Comments
-COMMENT ON COLUMN ship.shipment.external_id
-	IS 'External unique shipment order identifier';
+COMMENT ON COLUMN ship.shipments.external_id
+	IS 'External unique shipments order identifier';
 
-COMMENT ON COLUMN ship.shipment.order_external_id
+COMMENT ON COLUMN ship.shipments.order_external_id
 	IS 'External unique order identifier';
 
-COMMENT ON COLUMN ship.shipment.shipped
+COMMENT ON COLUMN ship.shipments.shipped
 	IS 'Time when the order was shipped';
 
 COMMIT;

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.orderprocessing.common.exceptions.ApiError;
 import com.orderprocessing.common.exceptions.ApiException;
 
-@RestControllerAdvice(basePackages = "spring.orders.demo.ship")
+@RestControllerAdvice(basePackages = "com.orderprocessing.ship")
 public class FulfillmentControllerAdvice {
 
 	private final MessageSource messageSource;
