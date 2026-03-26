@@ -8,4 +8,6 @@ public class Constants {
 
 	public static final String SHIPMENTS_PATH = "/shipments"; //$NON-NLS-1$
 
+	public static final String LOCATION_TEMPLATE = "%s/%s"; //$NON-NLS-1$
+
 }
