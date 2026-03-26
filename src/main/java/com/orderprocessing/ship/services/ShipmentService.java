@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +46,9 @@ public class ShipmentService {
 	private final ShipProps shipProps;
 
 	private final OrderClient orderClient;
+
+	@Value("${enable.feign.notifications}")
+	private boolean feignEnabled;
 
 	public ShipmentService(	ShipmentRepository repository,
 							ShipStatusRepository statusRepository,
@@ -123,7 +127,9 @@ public class ShipmentService {
 
 	private void markOrderAsShipped(UUID orderExternalId) {
 		try {
-		    orderClient.confirmShipped(orderExternalId);
+			if (feignEnabled) {
+				orderClient.confirmShipped(orderExternalId);
+			}
 		} catch (final FeignException e) {
 		    // TODO: implement retry/saga when message broker is introduced
 		    log.error("Failed to mark order {} as shipped. FeignException: {}", //$NON-NLS-1$

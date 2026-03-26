@@ -23,5 +23,15 @@
     "name": "com.orderprocessing.ship.fulfillment-sorting-attribute",
     "type": "java.lang.String",
     "description": "Default fulfillments sorting attribute and optional sorting order (e.g. created,desc)"
+  },
+  {
+    "name": "enable.feign.notifications",
+    "type": "java.lang.Boolean",
+    "description": "Enables inter-service Feign client"
+  },
+  {
+    "name": "orders.service.url",
+    "type": "java.lang.String",
+    "description": "The URL of the orders service endpoint"
   }
 ]}
