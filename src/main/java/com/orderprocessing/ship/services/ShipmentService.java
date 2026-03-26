@@ -3,7 +3,8 @@ package com.orderprocessing.ship.services;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.context.ApplicationEventPublisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.orderprocessing.common.constants.Constants;
 import com.orderprocessing.common.exceptions.UnauthorizedOperationException;
 import com.orderprocessing.common.security.SecurityUtils;
+import com.orderprocessing.ship.clients.OrderClient;
 import com.orderprocessing.ship.constants.Status;
 import com.orderprocessing.ship.dto.ShipmentResponse;
 import com.orderprocessing.ship.entities.ShipStatus;
@@ -27,8 +29,12 @@ import com.orderprocessing.ship.props.ShipProps;
 import com.orderprocessing.ship.repositories.ShipStatusRepository;
 import com.orderprocessing.ship.repositories.ShipmentRepository;
 
+import feign.FeignException;
+
 @Service
 public class ShipmentService {
+
+	Logger log = LoggerFactory.getLogger(ShipmentService.class);
 
 	private final ShipmentRepository repository;
 
@@ -38,15 +44,18 @@ public class ShipmentService {
 
 	private final ShipProps shipProps;
 
-	private final ApplicationEventPublisher publisher;
+	private final OrderClient orderClient;
 
-	public ShipmentService(ShipmentRepository repository, ShipStatusRepository statusRepository, ShipmentMapper mapper,
-			ShipProps shipProps, ApplicationEventPublisher publisher) {
+	public ShipmentService(	ShipmentRepository repository,
+							ShipStatusRepository statusRepository,
+							ShipmentMapper mapper,
+							ShipProps shipProps,
+							OrderClient orderClient) {
 		this.repository = repository;
 		this.statusRepository = statusRepository;
 		this.mapper = mapper;
 		this.shipProps = shipProps;
-		this.publisher = publisher;
+		this.orderClient = orderClient;
 	}
 
 	/**
@@ -106,10 +115,20 @@ public class ShipmentService {
 
 		final Shipment created = repository.save(newShipment);
 
-		// FIXME: Convert to a Kafka/RabbitMQ event once shipment service and a message broker are available
-//		publisher.publishEvent(new OrderShippedEvent(orderExternalId));
+		// TODO: Convert to a Kafka/RabbitMQ event once a message broker is available
+		markOrderAsShipped(orderExternalId);
 
 		return mapper.toResponse(created);
+	}
+
+	private void markOrderAsShipped(UUID orderExternalId) {
+		try {
+		    orderClient.confirmShipped(orderExternalId);
+		} catch (final FeignException e) {
+		    // TODO: implement retry/saga when message broker is introduced
+		    log.error("Failed to mark order {} as shipped. FeignException: {}", //$NON-NLS-1$
+		            orderExternalId, e.getMessage());
+		}
 	}
 
 	private Pageable getPagingRequest(Pageable pageable) {
