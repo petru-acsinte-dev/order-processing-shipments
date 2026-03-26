@@ -9,3 +9,4 @@ OrderProcessor - Shipments microservice - Daily journal
 - reworked the monolith Flyway scripts into a fresh, clean fulfillments and shipments initialization script
 - added fulfillment creation capability to fulfillment controller (to be called by orders Feign client when orders are confirmed)
 - added orders Feign client to mark orders as shipped
+- added capability to disable Feign in CI
