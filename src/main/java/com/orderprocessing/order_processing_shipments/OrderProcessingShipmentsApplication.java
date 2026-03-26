@@ -7,9 +7,9 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication(scanBasePackages = "com.orderprocessing")
-@EnableJpaRepositories(basePackages = "com.orderprocessing.shipments.repositories")
-@EntityScan(basePackages = "com.orderprocessing.shipments.entities")
-@EnableFeignClients(basePackages = "com.orderprocessing.shipments.clients")
+@EnableJpaRepositories(basePackages = "com.orderprocessing.ship.repositories")
+@EntityScan(basePackages = "com.orderprocessing.ship.entities")
+@EnableFeignClients(basePackages = "com.orderprocessing.ship.clients")
 public class OrderProcessingShipmentsApplication {
 
 	@SuppressWarnings("resource")
