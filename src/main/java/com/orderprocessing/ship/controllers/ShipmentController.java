@@ -2,6 +2,8 @@ package com.orderprocessing.ship.controllers;
 
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -32,6 +34,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping(path = Constants.SHIPMENTS_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class ShipmentController {
 
+	private static final Logger log = LoggerFactory.getLogger(ShipmentController.class);
+
 	private final ShipmentService service;
 
 	public ShipmentController(ShipmentService service) {
@@ -49,9 +53,12 @@ public class ShipmentController {
 	@ApiResponse (responseCode = "403",
 			description = "User does not have the required priviledges",
 			content = @Content(schema = @Schema(hidden = true)))
-	public ResponseEntity<PagedResponse<ShipmentResponse>> getFulfillments(	@ParameterObject
+	public ResponseEntity<PagedResponse<ShipmentResponse>> getShipments(	@ParameterObject
 																			@Parameter(required = false)
 																			Pageable pageable) {
+		log.debug("getShipments(page={}, size={}, sort={})",  //$NON-NLS-1$
+				pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
+
 		SecurityUtils.confirmAdminRole();
 
 		final var page = service.getShipments(pageable);
@@ -71,8 +78,10 @@ public class ShipmentController {
 	@ApiResponse (responseCode = "404",
 			description = "The specified order does not have a fulfillment",
 			content = @Content(schema = @Schema(hidden = true)))
-	public ResponseEntity<ShipmentResponse> getFulfillment(
+	public ResponseEntity<ShipmentResponse> getShipment(
 			@PathVariable UUID orderId) {
+		log.debug("getShipment(orderId={})", orderId); //$NON-NLS-1$
+
 		SecurityUtils.confirmAdminRole();
 
 		final ShipmentResponse fulfillment = service.getOrderShipment(orderId);

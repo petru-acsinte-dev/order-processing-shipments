@@ -3,6 +3,8 @@ package com.orderprocessing.ship.controllers;
 import java.net.URI;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -37,6 +39,8 @@ import jakarta.validation.Valid;
 @RequestMapping(path = Constants.FULFILLMENTS_PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class FulfillmentController {
 
+	private static final Logger log = LoggerFactory.getLogger(FulfillmentController.class);
+
 	private final FulfillmentService service;
 
 	public FulfillmentController(FulfillmentService service) {
@@ -57,6 +61,9 @@ public class FulfillmentController {
 	public ResponseEntity<PagedResponse<FulfillmentResponse>> getFulfillments(	@ParameterObject
 																				@Parameter(required = false)
 																				Pageable pageable) {
+		log.debug("getFulfillments(page={}, size={}, sort={})",  //$NON-NLS-1$
+				pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
+
 		SecurityUtils.confirmAdminRole();
 
 		final var page = service.getFulfillments(pageable);
@@ -78,6 +85,8 @@ public class FulfillmentController {
 			content = @Content(schema = @Schema(hidden = true)))
 	public ResponseEntity<FulfillmentResponse> getFulfillment(
 			@PathVariable UUID orderId) {
+		log.debug("getFulfillment(orderId={})", orderId); //$NON-NLS-1$
+
 		SecurityUtils.confirmAdminRole();
 
 		final FulfillmentResponse fulfillment = service.getOrderFulfillment(orderId);
@@ -98,6 +107,8 @@ public class FulfillmentController {
 			description = "Order not found",
 			content = @Content(schema = @Schema(hidden = true)))
 	public ResponseEntity<FulfillmentResponse> shipOrder(@PathVariable UUID orderId) {
+		log.debug("shipOrder(orderId={})", orderId); //$NON-NLS-1$
+
 		SecurityUtils.confirmAdminRole();
 
 		final FulfillmentResponse fulfillment = service.shipFulfilment(orderId);
@@ -112,6 +123,8 @@ public class FulfillmentController {
 			content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
 			schema = @Schema(implementation = FulfillmentResponse.class)))
 	public ResponseEntity<FulfillmentResponse> createFulfillment(@Valid @RequestBody CreateFulfillmentRequest request) {
+		log.debug("createFulfillment(orderId={})", request.getOrderExternalId()); //$NON-NLS-1$
+
 		final FulfillmentResponse fulfillment = service.createFulfilment(request.getOrderExternalId());
 
 		return ResponseEntity.created(URI.create(String.format(Constants.LOCATION_TEMPLATE,
