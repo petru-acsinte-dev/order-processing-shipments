@@ -1,6 +1,6 @@
 package com.orderprocessing.ship.dto;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,7 +29,7 @@ public class FulfillmentResponse {
 
 	@NotNull
 	@Schema(description = "The fulfillment creation date")
-	private LocalDateTime created;
+	private OffsetDateTime created;
 
 	public UUID getExternalId() {
 		return externalId;
@@ -55,11 +55,11 @@ public class FulfillmentResponse {
 		this.status = status;
 	}
 
-	public LocalDateTime getCreated() {
+	public OffsetDateTime getCreated() {
 		return created;
 	}
 
-	public void setCreated(LocalDateTime created) {
+	public void setCreated(OffsetDateTime created) {
 		this.created = created;
 	}
 

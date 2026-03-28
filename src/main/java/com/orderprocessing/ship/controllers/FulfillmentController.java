@@ -1,6 +1,5 @@
 package com.orderprocessing.ship.controllers;
 
-import java.net.URI;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -12,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +18,6 @@ import com.orderprocessing.common.response.PagedResponse;
 import com.orderprocessing.common.response.ResponseUtils;
 import com.orderprocessing.common.security.SecurityUtils;
 import com.orderprocessing.ship.constants.Constants;
-import com.orderprocessing.ship.dto.CreateFulfillmentRequest;
 import com.orderprocessing.ship.dto.FulfillmentResponse;
 import com.orderprocessing.ship.services.FulfillmentService;
 
@@ -32,7 +29,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 
 @Tag (name = "Fulfillments controller", description = "Operations related to order fulfillments")
 @RestController
@@ -114,22 +110,6 @@ public class FulfillmentController {
 		final FulfillmentResponse fulfillment = service.shipFulfilment(orderId);
 
 		return ResponseEntity.ok(fulfillment);
-	}
-
-	@PostMapping("/internal") // TODO: to be used only by inter-service calls
-	@Operation (summary = "Creates an order fulfillment",
-			description = "Creates an order fulfillment based on the order identifier.")
-	@ApiResponse(responseCode = "201",
-			content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-			schema = @Schema(implementation = FulfillmentResponse.class)))
-	public ResponseEntity<FulfillmentResponse> createFulfillment(@Valid @RequestBody CreateFulfillmentRequest request) {
-		log.debug("createFulfillment(orderId={})", request.getOrderExternalId()); //$NON-NLS-1$
-
-		final FulfillmentResponse fulfillment = service.createFulfilment(request.getOrderExternalId());
-
-		return ResponseEntity.created(URI.create(String.format(Constants.LOCATION_TEMPLATE,
-													Constants.FULFILLMENTS_PATH, request.getOrderExternalId())))
-							.body(fulfillment);
 	}
 
 }

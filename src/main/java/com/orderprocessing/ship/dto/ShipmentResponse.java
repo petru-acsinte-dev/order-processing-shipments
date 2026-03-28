@@ -1,6 +1,6 @@
 package com.orderprocessing.ship.dto;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,7 +29,7 @@ public class ShipmentResponse {
 
 	@NotNull
 	@Schema(description = "The shipment date")
-	private LocalDateTime shipped;
+	private OffsetDateTime shipped;
 
 	public UUID getExternalId() {
 		return externalId;
@@ -55,11 +55,11 @@ public class ShipmentResponse {
 		this.status = status;
 	}
 
-	public LocalDateTime getShipped() {
+	public OffsetDateTime getShipped() {
 		return shipped;
 	}
 
-	public void setShipped(LocalDateTime shipped) {
+	public void setShipped(OffsetDateTime shipped) {
 		this.shipped = shipped;
 	}
 

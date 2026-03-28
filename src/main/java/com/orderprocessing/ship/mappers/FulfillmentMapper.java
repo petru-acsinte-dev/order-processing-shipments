@@ -9,7 +9,7 @@ import com.orderprocessing.ship.dto.FulfillmentResponse;
 import com.orderprocessing.ship.entities.Fulfillment;
 
 @Mapper(config = GlobalMapperConfig.class)
-public interface FulfillmentMapper {
+public interface FulfillmentMapper extends DateTimeMapper {
 
 	@Mapping(target = "status", source = "fulfillment", qualifiedByName = "mapShipStatus")
 	FulfillmentResponse toResponse(Fulfillment fulfillment);

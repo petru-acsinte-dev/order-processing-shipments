@@ -21,3 +21,4 @@ OrderProcessor - Shipments microservice - Daily journal
 -
 - Introducing RabbitMQ for inter-service communication
 - Adopted common 0.4.0 with enhanced RabbitMQ events
+- Replaced LocalDateTime with OffsetDateTime in API responses

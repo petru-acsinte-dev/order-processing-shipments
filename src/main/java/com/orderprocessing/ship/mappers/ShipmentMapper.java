@@ -9,7 +9,7 @@ import com.orderprocessing.ship.dto.ShipmentResponse;
 import com.orderprocessing.ship.entities.Shipment;
 
 @Mapper(config = GlobalMapperConfig.class)
-public interface ShipmentMapper {
+public interface ShipmentMapper extends DateTimeMapper {
 
 	@Mapping(target = "status", source = "shipment", qualifiedByName = "mapShipStatus")
 	ShipmentResponse toResponse(Shipment shipment);
@@ -18,4 +18,5 @@ public interface ShipmentMapper {
 	default String mapShipStatus(Shipment entity) {
 		return entity.getStatus().getStatus();
 	}
+
 }
