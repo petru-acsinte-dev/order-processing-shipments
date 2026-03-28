@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.orderprocessing.common.dto.CreateFulfillmentRequest;
 import com.orderprocessing.common.response.PagedResponse;
 import com.orderprocessing.common.response.ResponseUtils;
 import com.orderprocessing.common.security.SecurityUtils;
 import com.orderprocessing.ship.constants.Constants;
+import com.orderprocessing.ship.dto.CreateFulfillmentRequest;
 import com.orderprocessing.ship.dto.FulfillmentResponse;
 import com.orderprocessing.ship.services.FulfillmentService;
 
