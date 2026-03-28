@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.orderprocessing.common.constants.Constants;
 import com.orderprocessing.common.exceptions.UnauthorizedOperationException;
 import com.orderprocessing.common.security.SecurityUtils;
-import com.orderprocessing.ship.clients.OrderClient;
 import com.orderprocessing.ship.constants.Status;
 import com.orderprocessing.ship.dto.ShipmentResponse;
 import com.orderprocessing.ship.entities.ShipStatus;
@@ -29,8 +27,6 @@ import com.orderprocessing.ship.mappers.ShipmentMapper;
 import com.orderprocessing.ship.props.ShipProps;
 import com.orderprocessing.ship.repositories.ShipStatusRepository;
 import com.orderprocessing.ship.repositories.ShipmentRepository;
-
-import feign.FeignException;
 
 @Service
 public class ShipmentService {
@@ -45,21 +41,14 @@ public class ShipmentService {
 
 	private final ShipProps shipProps;
 
-	private final OrderClient orderClient;
-
-	@Value("${enable.feign.notifications}")
-	private boolean feignEnabled;
-
 	public ShipmentService(	ShipmentRepository repository,
 							ShipStatusRepository statusRepository,
 							ShipmentMapper mapper,
-							ShipProps shipProps,
-							OrderClient orderClient) {
+							ShipProps shipProps) {
 		this.repository = repository;
 		this.statusRepository = statusRepository;
 		this.mapper = mapper;
 		this.shipProps = shipProps;
-		this.orderClient = orderClient;
 	}
 
 	/**
@@ -119,22 +108,7 @@ public class ShipmentService {
 
 		final Shipment created = repository.save(newShipment);
 
-		// TODO: Convert to a Kafka/RabbitMQ event once a message broker is available
-		markOrderAsShipped(orderExternalId);
-
 		return mapper.toResponse(created);
-	}
-
-	private void markOrderAsShipped(UUID orderExternalId) {
-		try {
-			if (feignEnabled) {
-				orderClient.confirmShipped(orderExternalId);
-			}
-		} catch (final FeignException e) {
-		    // TODO: implement retry/saga when message broker is introduced
-		    log.error("Failed to mark order {} as shipped. FeignException: {}", //$NON-NLS-1$
-		            orderExternalId, e.getMessage());
-		}
 	}
 
 	private Pageable getPagingRequest(Pageable pageable) {

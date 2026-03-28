@@ -4,9 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.orderprocessing.ship.events.OrderFulfilledEvent;
+import com.orderprocessing.ship.messaging.ShipmentEventPublisher;
 import com.orderprocessing.ship.services.ShipmentService;
 
 @Component
@@ -16,17 +16,18 @@ public class ShipmentListener {
 
 	private final ShipmentService service;
 
-	public ShipmentListener(ShipmentService service) {
+	private final ShipmentEventPublisher eventPublisher;
+
+	public ShipmentListener(ShipmentService service, ShipmentEventPublisher publisher) {
 		this.service = service;
+		this.eventPublisher = publisher;
 	}
 
 	@EventListener
-	@Transactional
 	public void handle(OrderFulfilledEvent event) {
-		try {
-			service.createShipment(event.orderExternalId());
-		} catch (final RuntimeException e) {
-			log.error(e.getMessage(), e);
-		}
+	    service.createShipment(event.orderExternalId());
+	    eventPublisher.publishOrderShippedEvent(event.orderExternalId());
+	    // TODO: Transactional Outbox pattern needed here
+	    // publish failure leaves shipment saved but order unnotified
 	}
 }
